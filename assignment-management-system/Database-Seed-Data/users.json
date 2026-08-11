@@ -1,0 +1,63 @@
+[{
+  "_id": {
+    "$oid": "6a74b50fd527d38c5824e9ad"
+  },
+  "Email": "azman6364@gmail.com",
+  "Name": "Azman",
+  "PasswordHash": "Password123",
+  "Role": "Teacher"
+},
+{
+  "_id": {
+    "$oid": "6a74bc0a0036fe8665950974"
+  },
+  "Email": "admin@example.com",
+  "Name": "Admin",
+  "PasswordHash": "string",
+  "Role": "Admin"
+},
+{
+  "_id": {
+    "$oid": "6a74ccf29d287ae350b6dbd2"
+  },
+  "Email": "student@example.com",
+  "Name": "Student",
+  "PasswordHash": "Password123",
+  "Role": "Student"
+},
+{
+  "_id": {
+    "$oid": "6a7594bbdc6c030785da7c15"
+  },
+  "Email": "jaber@example.com",
+  "Name": "Jaber",
+  "PasswordHash": "Password123",
+  "Role": "Teacher"
+},
+{
+  "_id": {
+    "$oid": "6a75d7853d744b5f63f0a5fa"
+  },
+  "Email": "jihad@example.com",
+  "Name": "jihad",
+  "PasswordHash": "Password123",
+  "Role": "Teacher"
+},
+{
+  "_id": {
+    "$oid": "6a7aaccc8b7bfbc5ed359ab1"
+  },
+  "Email": "student2@example.com",
+  "Name": "Student 2",
+  "PasswordHash": "Password123",
+  "Role": "Student"
+},
+{
+  "_id": {
+    "$oid": "6a7ab579ba2a110bd04fe0c6"
+  },
+  "Email": "student3@example.com",
+  "Name": "student 3",
+  "PasswordHash": "Password123",
+  "Role": "Student"
+}]
