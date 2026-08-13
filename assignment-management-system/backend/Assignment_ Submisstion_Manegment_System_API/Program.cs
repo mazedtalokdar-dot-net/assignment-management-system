@@ -1,5 +1,6 @@
 using Assignment__Submisstion_Manegment_System_API.Data;
 using Assignment__Submisstion_Manegment_System_API.Repositories;
+using Assignment__Submisstion_Manegment_System_API.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -51,7 +52,37 @@ builder.Services.AddCors(options =>
     });
 });
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = context.ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage);
+            var path = context.HttpContext.Request.Path;
+            var errorMsg = string.Join(", ", errors);
+            Console.WriteLine($"[Model Validation Error] on {path}: {errorMsg}");
+            
+            // Log to app-log.txt file
+            var logPath = Path.Combine(AppContext.BaseDirectory, "logs", "app-log.txt");
+            try
+            {
+                var dir = Path.GetDirectoryName(logPath);
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
+                File.AppendAllText(logPath, $"[{DateTime.UtcNow:yyyy-MM-dd HH:mm:ss}] MODEL VALIDATION ERROR on {path}: {errorMsg}{Environment.NewLine}");
+            }
+            catch {}
+
+            return new Microsoft.AspNetCore.Mvc.BadRequestObjectResult(new {
+                message = "Validation failed.",
+                errors = context.ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
+            });
+        };
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -84,6 +115,9 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Enable Global Exception Handling & Logging Middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -96,5 +130,19 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Auto-seed Database on startup
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    try
+    {
+        await DbInitializer.SeedAsync(context);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[DbInitializer] Database seeding failed: {ex.Message}");
+    }
+}
 
 app.Run();

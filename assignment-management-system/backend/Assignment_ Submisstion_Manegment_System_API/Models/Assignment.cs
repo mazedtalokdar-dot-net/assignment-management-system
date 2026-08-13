@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
@@ -33,9 +33,10 @@ namespace Assignment__Submisstion_Manegment_System_API.Models
         [Required]
         public string Status { get; set; } = "Draft";
 
-        [BsonRepresentation(BsonType.ObjectId)]
         public string TeacherId { get; set; } = string.Empty;
 
+        public bool AllowLateSubmissions { get; set; } = false;
+        
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

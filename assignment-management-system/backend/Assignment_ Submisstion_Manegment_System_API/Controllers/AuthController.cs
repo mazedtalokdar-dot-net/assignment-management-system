@@ -1,4 +1,4 @@
-﻿using Assignment__Submisstion_Manegment_System_API.Data;
+using Assignment__Submisstion_Manegment_System_API.Data;
 using Assignment__Submisstion_Manegment_System_API.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -26,11 +26,9 @@ namespace Assignment__Submisstion_Manegment_System_API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             // Find the user by email
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == request.Email.Trim().ToLower());
 
-            // Note: In a real-world scenario, passwords MUST be hashed (e.g., using BCrypt). 
-            // For this step, we are doing a direct string match based on the test data you created.
-            if (user == null || user.PasswordHash != request.Password)
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
                 return Unauthorized("Invalid email or password.");
             }

@@ -1,8 +1,10 @@
-﻿using Assignment__Submisstion_Manegment_System_API.DTOs;
+using Assignment__Submisstion_Manegment_System_API.Data;
+using Assignment__Submisstion_Manegment_System_API.DTOs;
 using Assignment__Submisstion_Manegment_System_API.Models;
 using Assignment__Submisstion_Manegment_System_API.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Assignment__Submisstion_Manegment_System_API.Controllers
@@ -13,10 +15,12 @@ namespace Assignment__Submisstion_Manegment_System_API.Controllers
     public class AssignmentsController : ControllerBase
     {
         private readonly IAssignmentRepository _repository;
+        private readonly ApplicationDbContext _context;
 
-        public AssignmentsController(IAssignmentRepository repository)
+        public AssignmentsController(IAssignmentRepository repository, ApplicationDbContext context)
         {
             _repository = repository;
+            _context = context;
         }
 
         [HttpGet]
@@ -33,6 +37,30 @@ namespace Assignment__Submisstion_Manegment_System_API.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
+            var userRole = User.FindFirstValue(ClaimTypes.Role);
+            if (userRole == "Teacher")
+            {
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null) return Unauthorized();
+
+                var teacherProfile = await _context.Teachers.FirstOrDefaultAsync(t => t.Email.ToLower() == user.Email.ToLower());
+                if (teacherProfile == null)
+                {
+                    return Forbid("Teacher profile not found.");
+                }
+
+                var subject = await _context.Subjects.FindAsync(dto.SubjectId);
+                if (subject == null)
+                {
+                    return NotFound("Subject not found.");
+                }
+
+                if (subject.AssignedTeacherId != teacherProfile.Id)
+                {
+                    return Forbid("You can only create assignments for subjects assigned to you.");
+                }
+            }
+
             var assignment = new Assignment
             {
                 Title = dto.Title,
@@ -43,6 +71,7 @@ namespace Assignment__Submisstion_Manegment_System_API.Controllers
                 MaxMarks = dto.MaxMarks,
                 Status = dto.Status, // Published or Draft
                 TeacherId = userId,
+                AllowLateSubmissions = false, // Default to false when created by teacher
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -60,9 +89,32 @@ namespace Assignment__Submisstion_Manegment_System_API.Controllers
 
             // Optional: Ensure the teacher updating it is the one who created it
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (User.FindFirstValue(ClaimTypes.Role) == "Teacher" && assignment.TeacherId != userId)
+            if (User.FindFirstValue(ClaimTypes.Role) == "Teacher")
             {
-                return Forbid("You can only update your own assignments.");
+                if (assignment.TeacherId != userId)
+                {
+                    return Forbid("You can only update your own assignments.");
+                }
+
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null) return Unauthorized();
+
+                var teacherProfile = await _context.Teachers.FirstOrDefaultAsync(t => t.Email.ToLower() == user.Email.ToLower());
+                if (teacherProfile == null)
+                {
+                    return Forbid("Teacher profile not found.");
+                }
+
+                var subject = await _context.Subjects.FindAsync(assignment.SubjectId);
+                if (subject == null)
+                {
+                    return NotFound("Subject not found.");
+                }
+
+                if (subject.AssignedTeacherId != teacherProfile.Id)
+                {
+                    return Forbid("You can only update assignments for subjects assigned to you.");
+                }
             }
 
             assignment.Title = dto.Title;

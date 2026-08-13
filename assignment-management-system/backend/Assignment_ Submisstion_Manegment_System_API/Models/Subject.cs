@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,7 +18,6 @@ namespace Assignment__Submisstion_Manegment_System_API.Models
         public string ClassCourseId { get; set; } = string.Empty;
 
         // Nullable because a subject might be created before a teacher is assigned
-        [BsonRepresentation(BsonType.ObjectId)]
         public string? AssignedTeacherId { get; set; }
     }
 }

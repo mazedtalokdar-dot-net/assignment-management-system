@@ -1,4 +1,4 @@
-﻿using Assignment__Submisstion_Manegment_System_API.Models;
+using Assignment__Submisstion_Manegment_System_API.Models;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.EntityFrameworkCore.Extensions;
 
@@ -13,6 +13,8 @@ namespace Assignment__Submisstion_Manegment_System_API.Data
 
         // This DbSet maps to the "Users" collection in MongoDB
         public DbSet<User> Users { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Assignment> Assignments { get; set; }
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<ClassCourse> ClassCourses { get; set; }
@@ -23,8 +25,10 @@ namespace Assignment__Submisstion_Manegment_System_API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Explicitly map the entity to a specific collection name
+            // Explicitly map entities to specific collection names
             modelBuilder.Entity<User>().ToCollection("users");
+            modelBuilder.Entity<Student>().ToCollection("students");
+            modelBuilder.Entity<Teacher>().ToCollection("teachers");
         }
     }
 }

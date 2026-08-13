@@ -1,4 +1,4 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.ComponentModel.DataAnnotations;
 
@@ -15,7 +15,6 @@ namespace Assignment__Submisstion_Manegment_System_API.Models
         public string AssignmentId { get; set; } = string.Empty;
 
         [Required]
-        [BsonRepresentation(BsonType.ObjectId)]
         public string StudentId { get; set; } = string.Empty;
 
         [Required]
