@@ -52,7 +52,7 @@ By default, the backend connects to MongoDB on `mongodb://localhost:27017`.
 
 ### 2. Start the Backend API
 ```bash
-cd backend/Assignment_%20Submisstion_Manegment_System_API
+cd "backend/Assignment_ Submisstion_Manegment_System_API"
 dotnet run
 ```
 * The API will start at: `https://localhost:7198` (or `http://localhost:5039`)
