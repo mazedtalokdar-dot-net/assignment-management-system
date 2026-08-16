@@ -51,6 +51,7 @@ By default, the backend connects to MongoDB on `mongodb://localhost:27017`.
 > If your MongoDB instance runs on a different port or URI (e.g. `mongodb://localhost:27018` or `mongodb://127.0.0.1:27017`), update the connection string in the `ConnectionStrings:MongoDb` section of [appsettings.json](file:///e:/Job%20Application/Project%20for%20Onnorokom%20Projukti/Project%20set%20up/assignment-management-system/backend/Assignment_%20Submisstion_Manegment_System_API/appsettings.json) to match your local environment before launching the application.
 
 ### 2. Start the Backend API
+*Before starting the server, rename the file <strong>appsettings.example.json</strong> to <strong>appsettings.json</strong> 
 ```bash
 cd "backend/Assignment_ Submisstion_Manegment_System_API"
 dotnet run
@@ -60,6 +61,12 @@ dotnet run
 * Swagger documentation is available in development mode at: `http://localhost:5039/swagger`
 
 ### 3. Start the Frontend Application
+*Add a file to the root frontend naming <strong>.env.local</strong> and 
+the file should contain this line 
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:5039/api
+```
+* Now open your terminal or cmd and use this command to run dynamic UI
 ```bash
 cd frontend
 npm install
