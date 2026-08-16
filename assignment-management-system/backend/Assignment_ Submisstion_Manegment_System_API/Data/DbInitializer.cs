@@ -261,7 +261,7 @@ namespace Assignment__Submisstion_Manegment_System_API.Data
             {
                 new ApplicationSetting
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = ObjectId.GenerateNewId().ToString(),
                     Key = "AllowLateSubmissions",
                     Value = "false"
                 }
